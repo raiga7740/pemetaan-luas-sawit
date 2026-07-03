@@ -234,25 +234,67 @@
     <div class="container">
 
         <span class="section-subtitle">
-
             Interactive Map
-
         </span>
 
         <h2>
-
             Explore Oil Palm Distribution
-
         </h2>
 
         <p class="section-desc">
-
             Klik polygon pada peta untuk melihat informasi mengenai
             persebaran perkebunan kelapa sawit di Indonesia.
-
         </p>
 
+        <!-- Map Wrapper -->
         <div class="map-wrapper">
+
+            <!-- ================= MAP INFO ================= -->
+
+            <div class="map-info">
+
+                <div class="info-header">
+                    <h3>Map Information</h3>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">📍 Latitude</span>
+                    <span id="latitude">-</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">📍 Longitude</span>
+                    <span id="longitude">-</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">🔍 Zoom Level</span>
+                    <span id="zoom-level">-</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">📏 Scale</span>
+                    <span id="scale">-</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">🕒 Time (WIB)</span>
+                    <span id="clock">00:00:00</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">🗺️ Active Layer</span>
+                    <span id="layer-name">Oil Palm Plantation</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">📌 Selected Province</span>
+                    <span id="province-name">None</span>
+                </div>
+
+            </div>
+
+            <!-- ================= MAP ================= -->
 
             <div id="map">
 
@@ -389,6 +431,7 @@
 <script src="./layers/layers.js"></script>
 <script src="./resources/Autolinker.min.js"></script>
 <script src="./resources/qgis2web.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
