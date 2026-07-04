@@ -91,22 +91,11 @@ ul{
 ==================================== */
 
 header{
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-
-    width: 90%;
-    max-width: 1200px;
-
-    z-index: 999;
-
-    background:rgba(0,0,0,.35);
-    backdrop-filter:blur(15px);
-
-    border: 1px solid rgba(255,255,255,.2);
-
-    border-radius: 60px;
+    position: relative;
+    width: 100%;
+    z-index: 10;
+    background:#1B5E20;
+    border-bottom: 1px solid rgba(255,255,255,.15);
 
     transition: .4s;
 }
@@ -899,11 +888,9 @@ footer p{
 
 header.scrolled{
 
-    background:rgba(255,255,255,.95);
+    background:#ffffff;
 
-    backdrop-filter:blur(15px);
-
-    box-shadow:0 8px 25px rgba(0,0,0,.08);
+    box-shadow:0 2px 12px rgba(0,0,0,.08);
 
 }
 
