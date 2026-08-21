@@ -8,45 +8,55 @@ app = Flask(__name__)
 BASE_DIR = Path(__file__).resolve().parent.parent
 MODEL_PATH = BASE_DIR / "model_kualitas_lahan.pkl"
 
-model = joblib.load(MODEL_PATH)
+try:
+    model = joblib.load(MODEL_PATH)
+    MODEL_ERROR = None
+except Exception as exc:
+    model = None
+    MODEL_ERROR = str(exc)
 
 
-@app.get("/api/predict")
-def health_check():
+@app.route("/api/predict", methods=["GET"])
+def health():
+    if MODEL_ERROR:
+        return jsonify({
+            "ok": False,
+            "error": "Model gagal dimuat.",
+            "detail": MODEL_ERROR
+        }), 500
+
     return jsonify({
         "ok": True,
         "message": "Kualitas Lahan ML API aktif."
     })
 
 
-@app.post("/api/predict")
+@app.route("/api/predict", methods=["POST"])
 def predict():
+    if MODEL_ERROR:
+        return jsonify({
+            "error": "Model gagal dimuat.",
+            "detail": MODEL_ERROR
+        }), 500
+
     try:
         data = request.get_json(silent=True)
 
         if not data:
-            return jsonify({
-                "error": "Request harus berisi JSON."
-            }), 400
+            return jsonify({"error": "Request body harus berupa JSON."}), 400
 
         ph = float(data["ph"])
         nitrogen = float(data["nitrogen"])
         kelembapan = float(data["kelembapan"])
 
         if not 4 <= ph <= 8:
-            return jsonify({
-                "error": "pH harus berada pada rentang 4–8."
-            }), 400
+            return jsonify({"error": "pH harus berada pada rentang 4–8."}), 400
 
         if not 10 <= nitrogen <= 40:
-            return jsonify({
-                "error": "Nitrogen harus berada pada rentang 10–40."
-            }), 400
+            return jsonify({"error": "Nitrogen harus berada pada rentang 10–40."}), 400
 
         if not 20 <= kelembapan <= 80:
-            return jsonify({
-                "error": "Kelembapan harus berada pada rentang 20–80."
-            }), 400
+            return jsonify({"error": "Kelembapan harus berada pada rentang 20–80."}), 400
 
         input_data = pd.DataFrame([{
             "ph": ph,
@@ -58,11 +68,10 @@ def predict():
         probabilities = model.predict_proba(input_data)[0]
         confidence = float(probabilities[prediction] * 100)
 
-        status = (
-            "LAHAN BERKUALITAS BAIK"
-            if prediction == 1
-            else "LAHAN BERKUALITAS BURUK"
-        )
+        if prediction == 1:
+            status = "LAHAN BERKUALITAS BAIK"
+        else:
+            status = "LAHAN BERKUALITAS BURUK"
 
         return jsonify({
             "prediction": prediction,
@@ -75,12 +84,16 @@ def predict():
             }
         })
 
-    except (KeyError, TypeError, ValueError):
+    except KeyError as exc:
         return jsonify({
-            "error": "Data input tidak valid."
+            "error": f"Input {exc.args[0]} wajib diisi."
         }), 400
-
-    except Exception as e:
+    except (TypeError, ValueError):
         return jsonify({
-            "error": "Model gagal dijalankan: " + str(e)
+            "error": "pH, nitrogen, dan kelembapan harus berupa angka."
+        }), 400
+    except Exception as exc:
+        return jsonify({
+            "error": "Prediksi gagal.",
+            "detail": str(exc)
         }), 500
