@@ -148,7 +148,7 @@ if (mlForm) {
         // Set loading state
         if (submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.textContent = "Menganalisis...";
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Menganalisis...</span>';
         }
 
         try {
@@ -240,7 +240,7 @@ if (mlForm) {
         } finally {
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.textContent = "Analisis Kualitas Lahan";
+                submitBtn.innerHTML = '<i class="fas fa-microchip"></i> <span>Analisis Kualitas Lahan</span>';
             }
         }
     });

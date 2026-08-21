@@ -1214,18 +1214,78 @@ p{
 }
 
 .ml-button{
-    width:100%;
-    border:0;
-    cursor:pointer;
-    font-family:inherit;
-    font-size:1rem;
-    font-weight:600;
-    margin-top:5px;
+    position: relative;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2E7D32 0%, #155E24 50%, #0D3B16 100%);
+    padding: 16px 28px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+    box-shadow: 0 10px 25px -5px rgba(46, 125, 50, 0.4),
+                0 4px 10px -2px rgba(46, 125, 50, 0.2);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    z-index: 1;
+}
+
+.ml-button::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.25),
+        transparent
+    );
+    transition: left 0.6s ease;
+    z-index: -1;
+}
+
+.ml-button:hover{
+    background: linear-gradient(135deg, #388E3C 0%, #1B5E20 50%, #0F4519 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px -5px rgba(46, 125, 50, 0.5),
+                0 8px 15px -3px rgba(46, 125, 50, 0.3);
+}
+
+.ml-button:hover::before{
+    left: 100%;
+}
+
+.ml-button:active{
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px -4px rgba(46, 125, 50, 0.4);
+}
+
+.ml-button i{
+    font-size: 1.15rem;
+    transition: transform 0.3s ease;
+}
+
+.ml-button:hover i{
+    transform: scale(1.15) rotate(5deg);
 }
 
 .ml-button:disabled{
-    opacity:.6;
-    cursor:wait;
+    opacity: 0.7;
+    cursor: wait;
+    transform: none !important;
+    box-shadow: none !important;
+    background: linear-gradient(135deg, #66bb6a 0%, #388e3c 100%);
 }
 
 .ml-result-card{
