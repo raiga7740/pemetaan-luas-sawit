@@ -112,6 +112,12 @@ header{
     padding:0 35px;
 }
 
+.logo-group{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
 .logo h2{
     color:white;
     font-size:2rem;
