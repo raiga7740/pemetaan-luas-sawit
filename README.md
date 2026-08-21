@@ -1,29 +1,36 @@
-# PalmScope Indonesia + Machine Learning
+# PalmScope Indonesia + Machine Learning — Vercel
 
-WebGIS qgis2web asli yang ditambahkan fitur pembelajaran Machine Learning.
+Versi ini menggunakan ZIP WebGIS qgis2web asli sebagai dasar.
 
-## Fitur
-- WebGIS OpenLayers dari QGIS/qgis2web tetap dipertahankan.
-- Analisis kualitas lahan menggunakan Random Forest.
-- Input: pH, nitrogen, kelembapan.
-- Output: kualitas lahan + keyakinan model.
+## Struktur penting
 
-## Menjalankan
+- `index.html` — WebGIS
+- `script.js` — interaksi WebGIS + request ML
+- `model_kualitas_lahan.pkl` — model Random Forest
+- `api/predict.py` — Python Serverless Function untuk prediksi
+- `requirements.txt` — dependency Python
+- `vercel.json` — konfigurasi Vercel
 
-```bash
-pip install -r requirements.txt
-python app.py
-```
+## Deploy ke Vercel
 
-Buka:
-http://127.0.0.1:5000
+Push seluruh isi folder ini ke repository GitHub, lalu import repository tersebut ke Vercel.
+
+Tidak perlu menjalankan `python app.py` di Vercel.
+
+Endpoint ML:
+`POST /api/predict`
+
+## Test lokal
+
+Untuk melihat WebGIS secara statis, buka dengan local server seperti Live Server.
+Untuk mengetes endpoint ML secara lokal, jalankan Flask dengan menyesuaikan `api/predict.py`, atau gunakan Vercel CLI.
 
 ## Catatan
-Model mengikuti notebook pembelajaran `kualitas_lahan`:
+
+Model ini mengikuti notebook pembelajaran:
 - 100 data sintetis
 - fitur: ph, nitrogen, kelembapan
 - target: kualitas_lahan
-- train/test: 80/20
-- RandomForestClassifier(n_estimators=100, random_state=42)
+- RandomForestClassifier
 
-Model ini hanya untuk pembelajaran dan bukan alat penilaian kualitas tanah nyata.
+Model hanya untuk pembelajaran, bukan penilaian kualitas tanah nyata.

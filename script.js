@@ -140,7 +140,7 @@ if (mlForm) {
 
         try {
 
-            const response = await fetch("/predict", {
+            const response = await fetch("/api/predict", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
