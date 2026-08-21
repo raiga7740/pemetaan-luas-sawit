@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings("ignore")
+
 from flask import Flask, request, jsonify
 from pathlib import Path
 import pandas as pd
@@ -14,6 +17,14 @@ try:
 except Exception as exc:
     model = None
     MODEL_ERROR = str(exc)
+
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    return response
 
 
 def health():
@@ -50,13 +61,13 @@ def predict():
         kelembapan = float(data["kelembapan"])
 
         if not 4 <= ph <= 8:
-            return jsonify({"error": "pH harus berada pada rentang 4–8."}), 400
+            return jsonify({"error": "pH harus berada pada rentang 4-8."}), 400
 
         if not 10 <= nitrogen <= 40:
-            return jsonify({"error": "Nitrogen harus berada pada rentang 10–40."}), 400
+            return jsonify({"error": "Nitrogen harus berada pada rentang 10-40."}), 400
 
         if not 20 <= kelembapan <= 80:
-            return jsonify({"error": "Kelembapan harus berada pada rentang 20–80."}), 400
+            return jsonify({"error": "Kelembapan harus berada pada rentang 20-80."}), 400
 
         X = pd.DataFrame([{
             "ph": ph,
@@ -98,18 +109,26 @@ def predict():
         }), 500
 
 
-# Vercel routes Python functions in api/index.py under /api/*.
-# The catch-all also makes the Flask app tolerant if the runtime
-# passes a path with /api removed.
-@app.route("/api/predict", methods=["GET"])
+@app.route("/", methods=["GET", "OPTIONS"])
+@app.route("/api", methods=["GET", "OPTIONS"])
+@app.route("/predict", methods=["GET", "OPTIONS"])
+@app.route("/api/predict", methods=["GET", "OPTIONS"])
+@app.route("/health", methods=["GET", "OPTIONS"])
+@app.route("/api/health", methods=["GET", "OPTIONS"])
 def api_health():
+    if request.method == "OPTIONS":
+        return "", 200
     return health()
 
 
+@app.route("/", methods=["POST"])
+@app.route("/api", methods=["POST"])
+@app.route("/predict", methods=["POST"])
 @app.route("/api/predict", methods=["POST"])
 def api_predict():
     return predict()
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
+

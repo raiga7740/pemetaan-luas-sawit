@@ -117,29 +117,41 @@ map.on("singleclick", function (evt) {
 const mlForm = document.getElementById("ml-form");
 
 if (mlForm) {
+    const submitBtn = document.getElementById("ml-submit");
+    const resultContainer = document.getElementById("ml-result");
+    const confidenceValue = document.getElementById("ml-confidence-value");
+    const progressBar = document.getElementById("ml-progress-bar");
+    const errorContainer = document.getElementById("ml-error");
 
     mlForm.addEventListener("submit", async function (event) {
-
         event.preventDefault();
 
-        const submitButton = document.getElementById("ml-submit");
-        const resultBox = document.getElementById("ml-result");
-        const errorBox = document.getElementById("ml-error");
-        const confidenceValue = document.getElementById("ml-confidence-value");
-        const progressBar = document.getElementById("ml-progress-bar");
+        const phInput = document.getElementById("ml-ph");
+        const nitrogenInput = document.getElementById("ml-nitrogen");
+        const kelembapanInput = document.getElementById("ml-kelembapan");
 
-        errorBox.style.display = "none";
-        submitButton.disabled = true;
-        submitButton.textContent = "Menganalisis...";
+        if (!phInput || !nitrogenInput || !kelembapanInput) {
+            console.error("Elemen input ML tidak ditemukan.");
+            return;
+        }
 
-        const data = {
-            ph: Number(document.getElementById("ml-ph").value),
-            nitrogen: Number(document.getElementById("ml-nitrogen").value),
-            kelembapan: Number(document.getElementById("ml-kelembapan").value)
-        };
+        const ph = parseFloat(phInput.value);
+        const nitrogen = parseFloat(nitrogenInput.value);
+        const kelembapan = parseFloat(kelembapanInput.value);
+
+        // Reset error state
+        if (errorContainer) {
+            errorContainer.style.display = "none";
+            errorContainer.textContent = "";
+        }
+
+        // Set loading state
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Menganalisis...";
+        }
 
         try {
-
             const response = await fetch("/api/predict", {
                 method: "POST",
                 headers: {
@@ -152,45 +164,49 @@ if (mlForm) {
                 })
             });
 
-            const contentType = response.headers.get("content-type") || "";
-            const result = contentType.includes("application/json")
-                ? await response.json()
-                : { error: await response.text() };
+            const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(result.error || "Prediksi gagal.");
+                throw new Error(data.error || "Prediksi gagal.");
             }
 
-            const isGood = result.prediction === 1;
+            // Update UI with prediction results
+            if (resultContainer) {
+                resultContainer.classList.remove("good", "bad");
+                const isGood = data.prediction === 1;
+                resultContainer.classList.add(isGood ? "good" : "bad");
 
-            resultBox.className = "ml-result " + (isGood ? "good" : "bad");
+                resultContainer.innerHTML = `
+                    <div class="ml-result-icon">${isGood ? "✓" : "✕"}</div>
+                    <h3>${data.status}</h3>
+                    <p>
+                        ${isGood
+                            ? "Lahan ini diprediksi memiliki kualitas yang baik dan optimal untuk pertumbuhan kelapa sawit."
+                            : "Lahan ini diprediksi memiliki kualitas yang kurang memadai untuk perkebunan kelapa sawit."}
+                    </p>
+                `;
+            }
 
-            resultBox.querySelector(".ml-result-icon").textContent =
-                isGood ? "✓" : "×";
+            if (confidenceValue) {
+                confidenceValue.textContent = `${data.confidence}%`;
+            }
 
-            resultBox.querySelector("h3").textContent =
-                result.status;
-
-            resultBox.querySelector("p").textContent =
-                "pH " + result.input.ph +
-                " • Nitrogen " + result.input.nitrogen +
-                " • Kelembapan " + result.input.kelembapan;
-
-            confidenceValue.textContent = result.confidence + "%";
-            progressBar.style.width = result.confidence + "%";
+            if (progressBar) {
+                progressBar.style.width = `${data.confidence}%`;
+            }
 
         } catch (error) {
-
-            errorBox.textContent = "Error: " + error.message;
-            errorBox.style.display = "block";
-
+            console.error("ML Prediction Error:", error);
+            if (errorContainer) {
+                errorContainer.style.display = "block";
+                errorContainer.textContent = error.message || "Terjadi kesalahan saat memproses prediksi.";
+            }
         } finally {
-
-            submitButton.disabled = false;
-            submitButton.textContent = "Analisis Kualitas Lahan";
-
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Analisis Kualitas Lahan";
+            }
         }
-
     });
-
 }
+
