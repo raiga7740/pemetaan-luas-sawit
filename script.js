@@ -158,11 +158,12 @@ if (mlForm) {
                 kelembapan: kelembapan
             };
 
-            const endpoints = [
-                "/api/predict",
-                "http://127.0.0.1:5000/api/predict",
-                "http://localhost:5000/api/predict"
-            ];
+            const isHttps = window.location.protocol === "https:";
+            const endpoints = ["/api/predict"];
+            if (!isHttps) {
+                endpoints.push("http://127.0.0.1:5000/api/predict");
+                endpoints.push("http://localhost:5000/api/predict");
+            }
 
             let data = null;
             let lastError = null;
@@ -201,8 +202,9 @@ if (mlForm) {
             }
 
             if (!data) {
-                throw lastError || new Error("Gagal terhubung ke API Machine Learning. Pastikan Python Flask server berjalan di http://127.0.0.1:5000.");
+                throw lastError || new Error("Gagal terhubung ke API Machine Learning.");
             }
+
 
             // Update UI with prediction results
             if (resultContainer) {

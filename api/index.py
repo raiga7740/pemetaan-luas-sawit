@@ -10,6 +10,8 @@ app = Flask(__name__)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 MODEL_PATH = BASE_DIR / "model_kualitas_lahan.pkl"
+if not MODEL_PATH.exists():
+    MODEL_PATH = Path(__file__).resolve().parent / "model_kualitas_lahan.pkl"
 
 try:
     model = joblib.load(MODEL_PATH)
