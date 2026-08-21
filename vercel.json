@@ -1,29 +1,7 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/predict.py",
-      "use": "@vercel/python",
-      "config": {
-        "includeFiles": ["model_kualitas_lahan.pkl", "api/**"]
-      }
-    },
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python",
-      "config": {
-        "includeFiles": ["model_kualitas_lahan.pkl", "api/**"]
-      }
+  "functions": {
+    "api/**/*.py": {
+      "includeFiles": "model_kualitas_lahan.pkl"
     }
-  ],
-  "routes": [
-    {
-      "src": "/api/predict",
-      "dest": "api/predict.py"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "api/index.py"
-    }
-  ]
+  }
 }
