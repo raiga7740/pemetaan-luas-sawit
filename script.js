@@ -246,4 +246,43 @@ if (mlForm) {
     });
 }
 
+/* ==========================================
+   MOBILE NAVBAR TOGGLE
+========================================== */
+document.addEventListener("DOMContentLoaded", function () {
+    const menuToggle = document.getElementById("mobile-menu-toggle");
+    const navMenu = document.getElementById("nav-menu");
+
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener("click", function () {
+            navMenu.classList.toggle("active");
+            const icon = menuToggle.querySelector("i");
+            if (icon) {
+                if (navMenu.classList.contains("active")) {
+                    icon.classList.remove("fa-bars");
+                    icon.classList.add("fa-times");
+                } else {
+                    icon.classList.remove("fa-times");
+                    icon.classList.add("fa-bars");
+                }
+            }
+        });
+
+        // Close mobile menu when clicking any link inside it
+        const navLinks = navMenu.querySelectorAll("a");
+        navLinks.forEach(function (link) {
+            link.addEventListener("click", function () {
+                if (navMenu.classList.contains("active")) {
+                    navMenu.classList.remove("active");
+                    const icon = menuToggle.querySelector("i");
+                    if (icon) {
+                        icon.classList.remove("fa-times");
+                        icon.classList.add("fa-bars");
+                    }
+                }
+            });
+        });
+    }
+});
+
 
