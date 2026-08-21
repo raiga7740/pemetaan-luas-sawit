@@ -152,22 +152,56 @@ if (mlForm) {
         }
 
         try {
-            const response = await fetch("/api/predict", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    ph: ph,
-                    nitrogen: nitrogen,
-                    kelembapan: kelembapan
-                })
-            });
+            const payload = {
+                ph: ph,
+                nitrogen: nitrogen,
+                kelembapan: kelembapan
+            };
 
-            const data = await response.json();
+            const endpoints = [
+                "/api/predict",
+                "http://127.0.0.1:5000/api/predict",
+                "http://localhost:5000/api/predict"
+            ];
 
-            if (!response.ok) {
-                throw new Error(data.error || "Prediksi gagal.");
+            let data = null;
+            let lastError = null;
+
+            for (const url of endpoints) {
+                try {
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const contentType = response.headers.get("content-type") || "";
+                    if (!contentType.includes("application/json")) {
+                        // Returned HTML page (e.g. 404 page from static live server)
+                        continue;
+                    }
+
+                    const json = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(json.error || `Server error (${response.status})`);
+                    }
+
+                    data = json;
+                    break;
+                } catch (err) {
+                    lastError = err;
+                    if (err.message && !err.message.includes("Unexpected token") && !err.message.includes("Failed to fetch")) {
+                        // Standard validation error from Flask API
+                        throw err;
+                    }
+                }
+            }
+
+            if (!data) {
+                throw lastError || new Error("Gagal terhubung ke API Machine Learning. Pastikan Python Flask server berjalan di http://127.0.0.1:5000.");
             }
 
             // Update UI with prediction results
@@ -209,4 +243,5 @@ if (mlForm) {
         }
     });
 }
+
 
