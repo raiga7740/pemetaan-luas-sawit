@@ -46,6 +46,7 @@
             <li><a href="#statistics">Statistics</a></li>
 
             <li><a href="#map-section">Map</a></li>
+            <li><a href="#ml-section">AI Analysis</a></li>
 
             <li><a href="#gallery">Gallery</a></li>
 
@@ -306,6 +307,109 @@
 
             </div>
 
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= MACHINE LEARNING ================= -->
+
+<section id="ml-section">
+
+    <div class="container">
+
+        <span class="section-subtitle">Machine Learning</span>
+
+        <h2>Analisis Kualitas Lahan</h2>
+
+        <p class="section-desc">
+            Gunakan model Random Forest untuk mencoba memprediksi kualitas
+            lahan berdasarkan pH tanah, nitrogen, dan kelembapan.
+        </p>
+
+        <div class="ml-grid">
+
+            <div class="ml-content">
+                <div class="ml-heading">
+                    <span class="ml-badge">AI / ML</span>
+                    <h3>Prediksi Kualitas Lahan</h3>
+                    <p>
+                        Masukkan data lahan di bawah ini. Website akan mengirim
+                        data ke model Machine Learning dan menampilkan hasil prediksi.
+                    </p>
+                </div>
+
+                <form id="ml-form" class="ml-form">
+
+                    <div class="ml-field">
+                        <label for="ml-ph">
+                            pH Tanah
+                            <span>4 – 8</span>
+                        </label>
+                        <input id="ml-ph" type="number" min="4" max="8"
+                               step="0.01" value="6.5" required>
+                    </div>
+
+                    <div class="ml-field">
+                        <label for="ml-nitrogen">
+                            Nitrogen
+                            <span>10 – 40</span>
+                        </label>
+                        <input id="ml-nitrogen" type="number" min="10" max="40"
+                               value="25" required>
+                    </div>
+
+                    <div class="ml-field">
+                        <label for="ml-kelembapan">
+                            Kelembapan
+                            <span>20 – 80</span>
+                        </label>
+                        <input id="ml-kelembapan" type="number" min="20" max="80"
+                               value="60" required>
+                    </div>
+
+                    <button id="ml-submit" type="submit" class="ml-button">
+                        Analisis Kualitas Lahan
+                    </button>
+
+                </form>
+            </div>
+
+            <div class="ml-result-card">
+
+                <span class="ml-result-label">HASIL PREDIKSI</span>
+
+                <div id="ml-result" class="ml-result">
+                    <div class="ml-result-icon">?</div>
+                    <h3>Belum ada prediksi</h3>
+                    <p>
+                        Isi data di sebelah kiri kemudian jalankan analisis.
+                    </p>
+                </div>
+
+                <div class="ml-confidence">
+                    <div>
+                        <span>Keyakinan Model</span>
+                        <strong id="ml-confidence-value">—</strong>
+                    </div>
+                    <div class="ml-progress">
+                        <div id="ml-progress-bar"></div>
+                    </div>
+                </div>
+
+                <div id="ml-error" class="ml-error"></div>
+
+            </div>
+
+        </div>
+
+        <div class="ml-note">
+            <strong>Catatan pembelajaran:</strong>
+            model ini menggunakan dataset sintetis dari notebook dan hanya
+            digunakan sebagai latihan Machine Learning, bukan untuk penilaian
+            kualitas tanah di dunia nyata.
         </div>
 
     </div>

@@ -109,3 +109,81 @@ map.on("singleclick", function (evt) {
         province;
 
 });
+
+/* ==========================================
+   MACHINE LEARNING - KUALITAS LAHAN
+========================================== */
+
+const mlForm = document.getElementById("ml-form");
+
+if (mlForm) {
+
+    mlForm.addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const submitButton = document.getElementById("ml-submit");
+        const resultBox = document.getElementById("ml-result");
+        const errorBox = document.getElementById("ml-error");
+        const confidenceValue = document.getElementById("ml-confidence-value");
+        const progressBar = document.getElementById("ml-progress-bar");
+
+        errorBox.style.display = "none";
+        submitButton.disabled = true;
+        submitButton.textContent = "Menganalisis...";
+
+        const data = {
+            ph: Number(document.getElementById("ml-ph").value),
+            nitrogen: Number(document.getElementById("ml-nitrogen").value),
+            kelembapan: Number(document.getElementById("ml-kelembapan").value)
+        };
+
+        try {
+
+            const response = await fetch("/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || "Prediksi gagal.");
+            }
+
+            const isGood = result.prediction === 1;
+
+            resultBox.className = "ml-result " + (isGood ? "good" : "bad");
+
+            resultBox.querySelector(".ml-result-icon").textContent =
+                isGood ? "✓" : "×";
+
+            resultBox.querySelector("h3").textContent =
+                result.status;
+
+            resultBox.querySelector("p").textContent =
+                "pH " + result.input.ph +
+                " • Nitrogen " + result.input.nitrogen +
+                " • Kelembapan " + result.input.kelembapan;
+
+            confidenceValue.textContent = result.confidence + "%";
+            progressBar.style.width = result.confidence + "%";
+
+        } catch (error) {
+
+            errorBox.textContent = "Error: " + error.message;
+            errorBox.style.display = "block";
+
+        } finally {
+
+            submitButton.disabled = false;
+            submitButton.textContent = "Analisis Kualitas Lahan";
+
+        }
+
+    });
+
+}
