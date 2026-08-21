@@ -1,4 +1,4 @@
-Flask
-pandas
-scikit-learn
-joblib
+Flask>=3.1,<4
+pandas>=2.2,<3
+scikit-learn==1.8.0
+joblib>=1.4,<2

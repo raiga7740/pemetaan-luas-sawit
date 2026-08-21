@@ -1,36 +1,34 @@
-# PalmScope Indonesia + Machine Learning — Vercel
+# PalmScope WebGIS + Machine Learning
 
-Versi ini menggunakan ZIP WebGIS qgis2web asli sebagai dasar.
+WebGIS qgis2web dengan model Random Forest untuk pembelajaran.
 
-## Struktur penting
+## Struktur ML
 
-- `index.html` — WebGIS
-- `script.js` — interaksi WebGIS + request ML
+- `api/index.py` — Flask Serverless Function Vercel
 - `model_kualitas_lahan.pkl` — model Random Forest
-- `api/predict.py` — Python Serverless Function untuk prediksi
 - `requirements.txt` — dependency Python
-- `vercel.json` — konfigurasi Vercel
+- `.python-version` — Python 3.12
+- `script.js` — memanggil endpoint `/api/predict`
 
-## Deploy ke Vercel
+## Endpoint
 
-Push seluruh isi folder ini ke repository GitHub, lalu import repository tersebut ke Vercel.
+GET `/api/predict` untuk mengecek API.
 
-Tidak perlu menjalankan `python app.py` di Vercel.
+POST `/api/predict` dengan JSON:
 
-Endpoint ML:
-`POST /api/predict`
+```json
+{
+  "ph": 6.5,
+  "nitrogen": 25,
+  "kelembapan": 60
+}
+```
 
-## Test lokal
+## Deploy Vercel
 
-Untuk melihat WebGIS secara statis, buka dengan local server seperti Live Server.
-Untuk mengetes endpoint ML secara lokal, jalankan Flask dengan menyesuaikan `api/predict.py`, atau gunakan Vercel CLI.
+Letakkan isi folder project ini sebagai root repository GitHub.
 
-## Catatan
+Tidak perlu `app.py` dan tidak perlu `vercel.json`.
+Vercel akan mendeteksi `api/index.py` sebagai Python Function.
 
-Model ini mengikuti notebook pembelajaran:
-- 100 data sintetis
-- fitur: ph, nitrogen, kelembapan
-- target: kualitas_lahan
-- RandomForestClassifier
-
-Model hanya untuk pembelajaran, bukan penilaian kualitas tanah nyata.
+Catatan: model dan data merupakan bahan pembelajaran, bukan alat penilaian tanah profesional.

@@ -148,7 +148,10 @@ if (mlForm) {
                 body: JSON.stringify(data)
             });
 
-            const result = await response.json();
+            const contentType = response.headers.get("content-type") || "";
+            const result = contentType.includes("application/json")
+                ? await response.json()
+                : { error: await response.text() };
 
             if (!response.ok) {
                 throw new Error(result.error || "Prediksi gagal.");
