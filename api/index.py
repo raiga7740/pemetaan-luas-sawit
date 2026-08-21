@@ -16,8 +16,7 @@ except Exception as exc:
     MODEL_ERROR = str(exc)
 
 
-@app.route("/api/predict", methods=["GET"])
-def health():
+def health_response():
     if MODEL_ERROR:
         return jsonify({
             "ok": False,
@@ -31,8 +30,7 @@ def health():
     })
 
 
-@app.route("/api/predict", methods=["POST"])
-def predict():
+def make_prediction():
     if MODEL_ERROR:
         return jsonify({
             "error": "Model gagal dimuat.",
@@ -51,10 +49,8 @@ def predict():
 
         if not 4 <= ph <= 8:
             return jsonify({"error": "pH harus berada pada rentang 4–8."}), 400
-
         if not 10 <= nitrogen <= 40:
             return jsonify({"error": "Nitrogen harus berada pada rentang 10–40."}), 400
-
         if not 20 <= kelembapan <= 80:
             return jsonify({"error": "Kelembapan harus berada pada rentang 20–80."}), 400
 
@@ -68,14 +64,13 @@ def predict():
         probabilities = model.predict_proba(input_data)[0]
         confidence = float(probabilities[prediction] * 100)
 
-        if prediction == 1:
-            status = "LAHAN BERKUALITAS BAIK"
-        else:
-            status = "LAHAN BERKUALITAS BURUK"
-
         return jsonify({
             "prediction": prediction,
-            "status": status,
+            "status": (
+                "LAHAN BERKUALITAS BAIK"
+                if prediction == 1
+                else "LAHAN BERKUALITAS BURUK"
+            ),
             "confidence": round(confidence, 1),
             "input": {
                 "ph": ph,
@@ -85,9 +80,7 @@ def predict():
         })
 
     except KeyError as exc:
-        return jsonify({
-            "error": f"Input {exc.args[0]} wajib diisi."
-        }), 400
+        return jsonify({"error": f"Input {exc.args[0]} wajib diisi."}), 400
     except (TypeError, ValueError):
         return jsonify({
             "error": "pH, nitrogen, dan kelembapan harus berupa angka."
@@ -97,3 +90,35 @@ def predict():
             "error": "Prediksi gagal.",
             "detail": str(exc)
         }), 500
+
+
+# Vercel's documented full-path routes.
+@app.route("/api/predict", methods=["GET"])
+def api_health():
+    return health_response()
+
+
+@app.route("/api/predict", methods=["POST"])
+def api_predict():
+    return make_prediction()
+
+
+# Fallback routes in case the Vercel runtime passes a path relative
+# to the Python function.
+@app.route("/predict", methods=["GET"])
+def fallback_health():
+    return health_response()
+
+
+@app.route("/predict", methods=["POST"])
+def fallback_predict():
+    return make_prediction()
+
+
+@app.route("/", methods=["GET"])
+def root_health():
+    return health_response()
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

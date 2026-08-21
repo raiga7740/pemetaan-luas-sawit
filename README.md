@@ -1,45 +1,21 @@
 # PalmScope WebGIS + Machine Learning
 
-WebGIS tetap merupakan website statis qgis2web. Machine Learning hanya ditambahkan
-sebagai Python Serverless Function di folder `api`.
+WebGIS tetap statis. ML dijalankan sebagai Python Serverless Function Vercel.
 
-## Struktur penting
+Struktur:
+- `index.html` — WebGIS
+- `script.js` — frontend
+- `api/index.py` — Flask ML API
+- `model_kualitas_lahan.pkl` — Random Forest
+- `requirements.txt` — dependency
 
-- `index.html` — WebGIS statis
-- `script.js` — frontend WebGIS + request ML
-- `model_kualitas_lahan.pkl` — model Random Forest
-- `api/index.py` — API ML Flask
-- `requirements.txt` — dependency Python
+Endpoint utama:
+`POST /api/predict`
 
-## Endpoint
+Tes setelah deploy:
+`GET https://pemetaan-luas-sawit.vercel.app/api/predict`
 
-Health check:
-GET `/api/predict`
+Jika aktif, response JSON:
+`{"ok": true, "message": "Kualitas Lahan ML API aktif."}`
 
-Prediksi:
-POST `/api/predict`
-
-Body:
-```json
-{
-  "ph": 6.5,
-  "nitrogen": 25,
-  "kelembapan": 60
-}
-```
-
-## Deploy Vercel
-
-1. Pastikan file di atas berada di ROOT repository.
-2. Tidak perlu `app.py`.
-3. Tidak perlu `vercel.json`.
-4. Push ke GitHub.
-5. Redeploy di Vercel.
-
-Setelah deploy, buka:
-`https://DOMAIN-VERCEL/api/predict`
-
-Jika berhasil, akan muncul JSON:
-`{"ok":true,"message":"Kualitas Lahan ML API aktif."}`
-
-Model digunakan untuk pembelajaran.
+Tidak menggunakan `app.py` atau `vercel.json`.
