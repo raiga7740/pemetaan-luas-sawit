@@ -1,21 +1,28 @@
-# PalmScope WebGIS + Machine Learning
+# PalmScope WebGIS + ML — Vercel Ready
 
-WebGIS tetap statis. ML dijalankan sebagai Python Serverless Function Vercel.
+WebGIS tetap statis. Python hanya digunakan untuk API Machine Learning.
 
 Struktur:
-- `index.html` — WebGIS
-- `script.js` — frontend
-- `api/index.py` — Flask ML API
-- `model_kualitas_lahan.pkl` — Random Forest
-- `requirements.txt` — dependency
+- `index.html`
+- `script.js`
+- `style.css`
+- `model_kualitas_lahan.pkl`
+- `requirements.txt`
+- `api/index.py`
 
-Endpoint utama:
+Vercel:
+- Tidak perlu `app.py`
+- Tidak perlu `vercel.json`
+- Python function otomatis terdeteksi dari `api/index.py`
+
+Endpoint frontend:
 `POST /api/predict`
 
-Tes setelah deploy:
-`GET https://pemetaan-luas-sawit.vercel.app/api/predict`
+Untuk cek API setelah deploy:
+`GET /api/predict`
 
-Jika aktif, response JSON:
-`{"ok": true, "message": "Kualitas Lahan ML API aktif."}`
+Response:
+`{"ok":true,"message":"Kualitas Lahan ML API aktif."}`
 
-Tidak menggunakan `app.py` atau `vercel.json`.
+Catatan: Flask function dibuat dengan catch-all route agar tetap bekerja
+jika runtime meneruskan path dengan atau tanpa prefix `/api`.

@@ -118,7 +118,7 @@ const mlForm = document.getElementById("ml-form");
 
 if (mlForm) {
 
-    mlForm.addEventListener("submit", async function(event) {
+    mlForm.addEventListener("submit", async function (event) {
 
         event.preventDefault();
 
@@ -145,7 +145,11 @@ if (mlForm) {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify({
+                    ph: ph,
+                    nitrogen: nitrogen,
+                    kelembapan: kelembapan
+                })
             });
 
             const contentType = response.headers.get("content-type") || "";

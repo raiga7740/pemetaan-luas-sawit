@@ -16,7 +16,7 @@ except Exception as exc:
     MODEL_ERROR = str(exc)
 
 
-def health_response():
+def health():
     if MODEL_ERROR:
         return jsonify({
             "ok": False,
@@ -30,7 +30,7 @@ def health_response():
     })
 
 
-def make_prediction():
+def predict():
     if MODEL_ERROR:
         return jsonify({
             "error": "Model gagal dimuat.",
@@ -41,7 +41,9 @@ def make_prediction():
         data = request.get_json(silent=True)
 
         if not data:
-            return jsonify({"error": "Request body harus berupa JSON."}), 400
+            return jsonify({
+                "error": "Request body harus berupa JSON."
+            }), 400
 
         ph = float(data["ph"])
         nitrogen = float(data["nitrogen"])
@@ -49,19 +51,21 @@ def make_prediction():
 
         if not 4 <= ph <= 8:
             return jsonify({"error": "pH harus berada pada rentang 4–8."}), 400
+
         if not 10 <= nitrogen <= 40:
             return jsonify({"error": "Nitrogen harus berada pada rentang 10–40."}), 400
+
         if not 20 <= kelembapan <= 80:
             return jsonify({"error": "Kelembapan harus berada pada rentang 20–80."}), 400
 
-        input_data = pd.DataFrame([{
+        X = pd.DataFrame([{
             "ph": ph,
             "nitrogen": nitrogen,
             "kelembapan": kelembapan
         }])
 
-        prediction = int(model.predict(input_data)[0])
-        probabilities = model.predict_proba(input_data)[0]
+        prediction = int(model.predict(X)[0])
+        probabilities = model.predict_proba(X)[0]
         confidence = float(probabilities[prediction] * 100)
 
         return jsonify({
@@ -80,7 +84,9 @@ def make_prediction():
         })
 
     except KeyError as exc:
-        return jsonify({"error": f"Input {exc.args[0]} wajib diisi."}), 400
+        return jsonify({
+            "error": f"Input {exc.args[0]} wajib diisi."
+        }), 400
     except (TypeError, ValueError):
         return jsonify({
             "error": "pH, nitrogen, dan kelembapan harus berupa angka."
@@ -92,32 +98,17 @@ def make_prediction():
         }), 500
 
 
-# Vercel's documented full-path routes.
+# Vercel routes Python functions in api/index.py under /api/*.
+# The catch-all also makes the Flask app tolerant if the runtime
+# passes a path with /api removed.
 @app.route("/api/predict", methods=["GET"])
 def api_health():
-    return health_response()
+    return health()
 
 
 @app.route("/api/predict", methods=["POST"])
 def api_predict():
-    return make_prediction()
-
-
-# Fallback routes in case the Vercel runtime passes a path relative
-# to the Python function.
-@app.route("/predict", methods=["GET"])
-def fallback_health():
-    return health_response()
-
-
-@app.route("/predict", methods=["POST"])
-def fallback_predict():
-    return make_prediction()
-
-
-@app.route("/", methods=["GET"])
-def root_health():
-    return health_response()
+    return predict()
 
 
 if __name__ == "__main__":
